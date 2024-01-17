@@ -38,7 +38,7 @@ function addTodoElement(todo) {
     todoEl.completed = todo.completed
     todoEl.innerHTML = `
                         <span>${todoText}</span>
-                        <span class="datetime">${date} ${time} (${day})</span>
+                        <span class="datetime">${formatDateTime(todo.timestamp)}</span>
                         `
     //Event listener for single click (task completed)
     todoEl.addEventListener('click', () => {
@@ -53,7 +53,7 @@ function addTodoElement(todo) {
         updateLS()
     }) 
 
-    todosOL.insertBefore(todoEl, todoOl.firstChild)
+    todosOL.insertBefore(todoEl, todosOl.firstChild)
 }
 
 function removeTodoElement(todoEl, todo) {
@@ -73,7 +73,7 @@ function updateTodoElement(todo){
     const todoElements = document.querySelectorAll('li')
     todoElements.forEach(todoEl => {
         const todoText = todoEl.querySelector('span').innerText
-        if(todoEl === todo.text){
+        if(todoText === todo.text){
             todoEl.completed = todo.completed
             todoEl.classList.toggle('completed', todo.completed)
             updateLS()
