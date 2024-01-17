@@ -68,7 +68,7 @@ function updateLS() {
 
     todosEl.forEach(todoEl => {
         todos.push({
-            text: todoEl.querySelector('span')innerText,
+            text: todoEl.querySelector('span').innerText,
             completed: todoEl.completed
         })
     })
