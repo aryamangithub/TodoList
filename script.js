@@ -1,10 +1,10 @@
 const form = document.getElementById('form')
 const input = document.getElementById('input')
-const todosUL = document.getElementById('todos')
+const todosOL = document.getElementById('todos')
 
 const todos = JSON.parse(localStorage.getItem('todos'))
 
-if(todos) {
+if(todos.length>0) {
     todos.forEach(todo => addTodo(todo))
 }
 
@@ -29,8 +29,12 @@ function addTodo(todo) {
             todoEl.completed = true
             todoEl.classList.add('completed')
         }
-
-        todoEl.innerText = todoText
+        const {date, time, day} = getCurrentDateTime()
+        
+        todoEl.innerHTML = `
+                        <span>${todoText}</span>
+                        <span class="datetime">${date} ${time} (${day})</span>
+        `
 
         todoEl.addEventListener('click', () => {
             if(todoEl.completed){
@@ -51,7 +55,7 @@ function addTodo(todo) {
             updateLS()
         }) 
 
-        todosUL.appendChild(todoEl)
+        todosOL.insertBefore(todoEl, todoOl.firstChild)
         input.value = ''
         updateLS()
     }
@@ -64,10 +68,24 @@ function updateLS() {
 
     todosEl.forEach(todoEl => {
         todos.push({
-            text: todoEl.innerText,
+            text: todoEl.querySelector('span')innerText,
             completed: todoEl.completed
         })
     })
 
     localStorage.setItem('todos', JSON.stringify(todos))
+}
+
+function getCurrentDateTime() {
+    const now = new Date()
+    const date = now.toLocaleDateString()
+    const time = now.toLocaleTimeString()
+    const day = getDayOfWeek(now.getDay())
+
+    return {date, time, day}
+}
+
+function getDayOfWeek(dayIndex) {
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return daysOfWeek[dayIndex]
 }
