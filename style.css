@@ -70,3 +70,10 @@ small {
   margin-top: 3rem;
   text-align: center;
 } 
+
+li .datetime {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size:x-small;
+  color: purple;
+  text-align: end;
+}
