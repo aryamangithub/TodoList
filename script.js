@@ -2,10 +2,10 @@ const form = document.getElementById('form')
 const input = document.getElementById('input')
 const todosOL = document.getElementById('todos')
 
-const todos = JSON.parse(localStorage.getItem('todos'))
+const todos = JSON.parse(localStorage.getItem('todos')) || []
 
 if(todos.length>0) {
-    todos.forEach(todo => addTodo(todo))
+    todos.forEach(todo => addTodoElement(todo))
 }
 
 form.addEventListener('submit', (e) => {
@@ -14,78 +14,79 @@ form.addEventListener('submit', (e) => {
     addTodo()
 })
 
-function addTodo(todo) {
+function addTodo() {
     let todoText = input.value
-
-    if(todo) {
-        todoText = todo.text
-    }
-
+    
     if(todoText) {
-        const todoEl = document.createElement('li')
-        todoEl.completed = false
-
-        if(todo && todo.completed) {
-            todoEl.completed = true
-            todoEl.classList.add('completed')
+        const timestamp = new Date().getTime(); // Current timestamp when the task is added
+        const todo = {
+            text: todoText,
+            completed: false,
+            timestamp: timestamp
         }
-        const {date, time, day} = getCurrentDateTime()
+        todos.unshift(todo)// Add the new todo at the beginning of the array
         
-        todoEl.innerHTML = `
-                        <span>${todoText}</span>
-                        <span class="datetime">${date} ${time} (${day})</span>
-        `
+        addTodoElement(todo) // Add the todo element to the DOM
 
-        todoEl.addEventListener('click', () => {
-            if(todoEl.completed){
-                todoEl.remove();
-                updateLS();
-            }
-            else {
-                todoEl.completed = true
-                todoEl.classList.toggle('completed');
-                updateLS();
-            }
-        }) 
-
-        todoEl.addEventListener('contextmenu', (e) => {
-            e.preventDefault()
-
-            todoEl.remove()
-            updateLS()
-        }) 
-
-        todosOL.insertBefore(todoEl, todoOl.firstChild)
         input.value = ''
         updateLS()
     }
 }
 
-function updateLS() {
-    todosEl = document.querySelectorAll('li')
+function addTodoElement(todo) {
+    const todoEl = document.createElement('li')
+    todoEl.completed = todo.completed
+    todoEl.innerHTML = `
+                        <span>${todoText}</span>
+                        <span class="datetime">${date} ${time} (${day})</span>
+                        `
+    //Event listener for single click (task completed)
+    todoEl.addEventListener('click', () => {
+        toggleTodoCompletion(todo)
+        updateLS()
+    }) 
 
-    const todos = []
+    //Event listener for right click (remove task)
+    todoEl.addEventListener('contextmenu', (e) => {
+        e.preventDefault()
+        removeTodoElement(todoEl, todo)
+        updateLS()
+    }) 
 
-    todosEl.forEach(todoEl => {
-        todos.push({
-            text: todoEl.querySelector('span').innerText,
-            completed: todoEl.completed
-        })
+    todosOL.insertBefore(todoEl, todoOl.firstChild)
+}
+
+function removeTodoElement(todoEl, todo) {
+    todoEl.remove()
+    const todoIndex = todos.indexOf(todo)
+    if(todoIndex !== -1){
+        todos.splice(todoIndex, 1)
+    }
+}
+
+function toggleTodoCompletion(todo) {
+    todo.completed = !todo.completed
+    updateTodoElement(todo)
+}
+
+function updateTodoElement(todo){
+    const todoElements = document.querySelectorAll('li')
+    todoElements.forEach(todoEl => {
+        const todoText = todoEl.querySelector('span').innerText
+        if(todoEl === todo.text){
+            todoEl.completed = todo.completed
+            todoEl.classList.toggle('completed', todo.completed)
+            updateLS()
+        }
     })
+}
 
+function updateLS() {
     localStorage.setItem('todos', JSON.stringify(todos))
 }
 
-function getCurrentDateTime() {
-    const now = new Date()
-    const date = now.toLocaleDateString()
-    const time = now.toLocaleTimeString()
-    const day = getDayOfWeek(now.getDay())
-
-    return {date, time, day}
-}
-
-function getDayOfWeek(dayIndex) {
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    return daysOfWeek[dayIndex]
+function formatDateTime(timestamp){
+    const date = new Date(timestamp)
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+    return date.toLocaleDateString(undefined, options)
 }
