@@ -23,29 +23,22 @@ function addTodo(todo) {
 
     if(todoText) {
         const todoEl = document.createElement('li')
-        todoEl.clickCount = 0
+        todoEl.completed = false
 
         if(todo && todo.completed) {
+            todoEl.completed = true
             todoEl.classList.add('completed')
         }
 
         todoEl.innerText = todoText
 
-        todoEl.addEventListener('click', (e)=> {
-            e.stopPropagation();
-            todoEl.remove();
-            updateLS();
-        })
-
         todoEl.addEventListener('click', () => {
-            todoEl.clickCount++;
-
-            if(todoEl.clickCount === 2){
+            if(todoEl.completed){
                 todoEl.remove();
                 updateLS();
             }
-
             else {
+                todoEl.completed = true
                 todoEl.classList.toggle('completed');
                 updateLS();
             }
@@ -59,9 +52,7 @@ function addTodo(todo) {
         }) 
 
         todosUL.appendChild(todoEl)
-
         input.value = ''
-
         updateLS()
     }
 }
@@ -74,7 +65,7 @@ function updateLS() {
     todosEl.forEach(todoEl => {
         todos.push({
             text: todoEl.innerText,
-            completed: todoEl.classList.contains('completed')
+            completed: todoEl.completed
         })
     })
 
