@@ -53,7 +53,7 @@ function addTodoElement(todo) {
         updateLS()
     }) 
 
-    todosOL.insertBefore(todoEl, todosOl.firstChild)
+    todosOl.insertBefore(todoEl, todosOl.firstChild)
 }
 
 function removeTodoElement(todoEl, todo) {
