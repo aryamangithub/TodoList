@@ -37,7 +37,7 @@ function addTodoElement(todo) {
     const todoEl = document.createElement('li')
     todoEl.completed = todo.completed
     todoEl.innerHTML = `
-                        <span>${todoText}</span>
+                        <span>${todo.text}</span>
                         <span class="datetime">${formatDateTime(todo.timestamp)}</span>
                         `
     //Event listener for single click (task completed)
